@@ -19,7 +19,7 @@ int EventFilter(void *userdata, SDL_Event *event)
 
 int main()
 {
-    App app("Tron", 600, 600, 0, SDL_RENDERER_ACCELERATED);
+    App app("Tron", 600, 600, SDL_INIT_VIDEO, 0);
     app.SetWindowMinimumSize(300, 300);
     SDL_SetEventFilter(EventFilter, &app);
 
@@ -36,14 +36,13 @@ int main()
     float deltaTime = 0;
 
     SDL_Event event;
-    bool quit = false;
-    while (!quit)
+    while (!app.quit)
     {
         LAST = NOW;
         NOW = SDL_GetPerformanceCounter();
         deltaTime = ((NOW - LAST) / (float)SDL_GetPerformanceFrequency());
 
-        app.Update(event, quit, deltaTime);
+        app.Update(event, deltaTime);
         app.Draw();
         SDL_framerateDelay(&fps);
     }

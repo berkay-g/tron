@@ -19,7 +19,7 @@
 class App
 {
 public:
-    App(const char *window_title, int window_width, int window_height, Uint32 window_flags = SDL_WINDOW_RESIZABLE, Uint32 renderer_flags = SDL_RENDERER_ACCELERATED, Uint32 sdl_init_flags = SDL_INIT_VIDEO);
+    App(const char *window_title, int window_width, int window_height, Uint32 sdl_init_flags = SDL_INIT_VIDEO, Uint32 window_flags = SDL_WINDOW_RESIZABLE, const char* renderer_name = NULL);
     ~App();
 
 #ifdef IMGUI
@@ -52,18 +52,18 @@ public:
 #endif
 
     void Setup();
-    void Update(SDL_Event &event, bool &quit, float deltaTime);
+    void Update(SDL_Event &event, float deltaTime);
     void Draw();
 
     const bool IsMouseInsideRect(float mouseX, float mouseY, const SDL_FRect &rect);
-
+    bool quit;
 private:
-    SDL_Window *window{};
-    SDL_Renderer *renderer{};
+    SDL_Window *window;
+    SDL_Renderer *renderer;
     const char *window_title;
     int initial_window_width, initial_window_height;
     int window_width, window_height;
-    float scale_factor_x{}, scale_factor_y{}, scale_factor{};
+    float scale_factor_x, scale_factor_y, scale_factor;
     bool isMouseHidden;
 
     SDL_Texture *font;
@@ -72,8 +72,8 @@ public:
     struct Texture
     {
         SDL_Texture *texture;
-        Texture(const char* filename, SDL_Renderer* renderer, SDL_PixelFormatEnum pixelFormat = SDL_PIXELFORMAT_ARGB8888);
-        Texture(const unsigned char* imageData, int imageDataSize, SDL_Renderer* renderer, SDL_PixelFormatEnum pixelFormat = SDL_PIXELFORMAT_ARGB8888);
+        Texture(const char* filename, SDL_Renderer* renderer);
+        Texture(const unsigned char* imageData, int imageDataSize, SDL_Renderer* renderer);
         ~Texture();
     };
 };
