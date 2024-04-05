@@ -50,8 +50,8 @@ public:
 bool endgame = false;
 bool paused = true;
 
-Player blue({0, 155, 255}, Vec2s{70, 110}, Vec2s{0, -1});
-Player red({255, 155, 0}, Vec2s{50, 10}, Vec2s{0, 1});
+Player blue(Color(0, 155, 255), Vec2s(70, 110), Vec2s(0, -1));
+Player red(Color(255, 155, 0), Vec2s(50, 10), Vec2s(0, 1));
 
 Delay delay(0.02f);
 
@@ -157,28 +157,23 @@ void App::Update(SDL_Event &event, float deltaTime)
         delay.start = true;
     }
 
-   
-    if (blue.light.back().x < 0 || blue.light.back().x > -1 + window_width / blue.size || blue.light.back().y < 0 || blue.light.back().y > -1 + window_height / blue.size)
-    {
-        if (!endgame) 
-        {
-            red.score += 1;
-            SDL_SetWindowTitle(window, "<<<<");
-        }
-        blue.dead = true;
-        endgame = true;
-    }
+    if (blue.light.back().x < 0)
+        blue.light.back().x = -1 + short(window_width / blue.size);
+    if (blue.light.back().x > -1 + window_width / blue.size)
+        blue.light.back().x = 0;
+    if (blue.light.back().y < 0)
+        blue.light.back().y = -1 + short(window_width / blue.size);
+    if (blue.light.back().y > -1 + window_width / blue.size)
+        blue.light.back().y = 0; 
 
-    if (red.light.back().x < 0 || red.light.back().x > -1 + window_width / red.size || red.light.back().y < 0 || red.light.back().y > -1 + window_height / red.size)
-    {
-        if (!endgame) 
-        {
-            blue.score += 1;
-            SDL_SetWindowTitle(window, ">>>>");
-        }
-        red.dead = true;
-        endgame = true;
-    }
+    if (red.light.back().x < 0)
+        red.light.back().x = -1 + short(window_width / red.size);
+    if (red.light.back().x > -1 + window_width / red.size)
+        red.light.back().x = 0;
+    if (red.light.back().y < 0)
+        red.light.back().y = -1 + short(window_width / red.size);
+    if (red.light.back().y > -1 + window_width / red.size)
+        red.light.back().y = 0;
         
     for (size_t i = 0; i < red.light.size(); i++)
     {
