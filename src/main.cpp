@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 
     FPSmanager fps;
     SDL_initFramerate(&fps);
-    SDL_setFramerate(&fps, 60);
+    SDL_setFramerate(&fps, 144);
 
     Uint64 NOW = SDL_GetPerformanceCounter();
     Uint64 LAST = 0;
