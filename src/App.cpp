@@ -229,6 +229,16 @@ int App::SetRenderDrawColor(Color color)
 
 App::Texture::Texture(const char *filename, SDL_Renderer *renderer)
 {
+    Bind(filename, renderer);
+}
+
+App::Texture::Texture(const unsigned char *imageData, int imageDataSize, SDL_Renderer *renderer)
+{
+    Bind(imageData, imageDataSize, renderer);
+}
+
+void App::Texture::Bind(const char *filename, SDL_Renderer *renderer)
+{
     SDL_Surface *surface = NULL;
     texture = NULL;
     int32_t width, height, bytesPerPixel;
@@ -264,7 +274,7 @@ App::Texture::Texture(const char *filename, SDL_Renderer *renderer)
     SDL_DestroySurface(surface);
 }
 
-App::Texture::Texture(const unsigned char *imageData, int imageDataSize, SDL_Renderer *renderer)
+void App::Texture::Bind(const unsigned char *imageData, int imageDataSize, SDL_Renderer *renderer)
 {
     SDL_Surface *surface = NULL;
     texture = NULL;

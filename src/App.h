@@ -19,7 +19,7 @@
 class App
 {
 public:
-    App(const char *window_title, int window_width, int window_height, Uint32 sdl_init_flags = SDL_INIT_VIDEO, Uint32 window_flags = SDL_WINDOW_RESIZABLE, const char* renderer_name = NULL);
+    App(const char *window_title, int window_width, int window_height, Uint32 sdl_init_flags = SDL_INIT_VIDEO, Uint32 window_flags = SDL_WINDOW_RESIZABLE, const char *renderer_name = NULL);
     ~App();
 
 #ifdef IMGUI
@@ -46,7 +46,7 @@ public:
     void ShowMouseCursor();
 
     void DrawString(const std::string &str, const SDL_FRect &dimensions);
-    void SetStringTextureColorMode(const Color& color);
+    void SetStringTextureColorMode(const Color &color);
 #ifdef IMGUI
     void DrawString(const std::string &str, const ImVec2 &position, float size, const ImVec4 &color, int discriminator);
 #endif
@@ -57,6 +57,7 @@ public:
 
     const bool IsMouseInsideRect(float mouseX, float mouseY, const SDL_FRect &rect);
     bool quit;
+
 private:
     SDL_Window *window;
     SDL_Renderer *renderer;
@@ -72,8 +73,12 @@ public:
     struct Texture
     {
         SDL_Texture *texture;
-        Texture(const char* filename, SDL_Renderer* renderer);
-        Texture(const unsigned char* imageData, int imageDataSize, SDL_Renderer* renderer);
+        Texture() : texture(NULL) {}
+        Texture(const char *filename, SDL_Renderer *renderer);
+        Texture(const unsigned char *imageData, int imageDataSize, SDL_Renderer *renderer);
+
+        void Bind(const char *filename, SDL_Renderer *renderer);
+        void Bind(const unsigned char *imageData, int imageDataSize, SDL_Renderer *renderer);
         ~Texture();
     };
 };

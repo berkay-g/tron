@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "Player.h"
+#include "Bikes.h"
 
 bool endgame = false;
 bool paused = true;
@@ -11,16 +12,26 @@ const SDL_KeyCode wasd[4] = {SDLK_w, SDLK_a, SDLK_s, SDLK_d};
 const SDL_KeyCode arrows[4] = {SDLK_UP, SDLK_LEFT, SDLK_DOWN, SDLK_RIGHT};
 
 Player blue(Color(0, 155, 255), Vec2s(70, 110), Vec2s(0, -1), arrows);
-Player red(Color(255, 155, 0), Vec2s(50, 10), Vec2s(0, 1), wasd);
+// Player yellow(Color(255, 255, 0), Vec2s(70, 110), Vec2s(0, -1), arrows);
+Player orange(Color(255, 155, 0), Vec2s(50, 10), Vec2s(0, 1), wasd);
+// Player red(Color(255, 35, 35), Vec2s(50, 10), Vec2s(0, 1), wasd);
 
-float speed = 70.f;
+float speed = 65.f;
 float timeCounter = 0.f;
+
+App::Texture blueBike, orangeBike, bg;
 
 void App::Setup()
 {
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     blue.iPos = Vec2s((short)(window_width / blue.size) - 50, (short)(window_height / blue.size) - 10);
     blue.ResetPosition();
+
+    blueBike.Bind(bBike, bBikeSize, renderer);
+    orangeBike.Bind(oBike, oBikeSize, renderer);
+
+    bg.Bind("bg.jpg", renderer);
+    SDL_SetTextureColorMod(bg.texture, 75, 75, 75);
 }
 
 void App::Update(SDL_Event &event, float deltaTime)
@@ -45,7 +56,7 @@ void App::Update(SDL_Event &event, float deltaTime)
             else if (event.key.keysym.sym == SDLK_SPACE && (paused || endgame))
             {
                 blue.ResetPosition();
-                red.ResetPosition();
+                orange.ResetPosition();
                 paused = false;
                 if (endgame)
                     paused = true;
@@ -64,7 +75,7 @@ void App::Update(SDL_Event &event, float deltaTime)
 
             if (!navigationLock[1])
             {
-                if (red.KeyEvents(event))
+                if (orange.KeyEvents(event))
                     navigationLock[1] = true;
             }
 
@@ -79,41 +90,40 @@ void App::Update(SDL_Event &event, float deltaTime)
         {
             timeCounter -= 1 / speed;
             blue.Update();
-            red.Update();
+            orange.Update();
             navigationLock[0] = false;
             navigationLock[1] = false;
 
             blue.BorderTeleport(window_width, window_height);
-            red.BorderTeleport(window_width, window_height);
+            orange.BorderTeleport(window_width, window_height);
 
-            if (red.CheckCollision() || red.CheckCollision(blue))
+            if (orange.CheckCollision() || orange.CheckCollision(blue))
             {
                 if (!endgame)
                 {
                     blue.score += 1;
                     SDL_SetWindowTitle(window, ">>>>");
                 }
-                red.dead = true;
+                orange.dead = true;
                 endgame = true;
             }
-            if (blue.CheckCollision() || blue.CheckCollision(red))
+            if (blue.CheckCollision() || blue.CheckCollision(orange))
             {
                 if (!endgame)
                 {
-                    red.score += 1;
+                    orange.score += 1;
                     SDL_SetWindowTitle(window, "<<<<");
                 }
                 blue.dead = true;
                 endgame = true;
             }
 
-            if (!endgame && red.head == blue.head)
+            if (!endgame && orange.head == blue.head)
             {
                 blue.dead = true;
-                red.dead = true;
+                orange.dead = true;
                 endgame = true;
             }
-            
         }
     }
     else
@@ -126,14 +136,29 @@ void App::Draw()
     this->SetRenderDrawColor({22, 22, 22});
     SDL_RenderClear(renderer);
 
+    if (bg.texture != NULL)
+    {
+        SDL_FRect srcrect = {0.f, 0.f, 2000.f, 2000.f};
+        SDL_FRect dscrect = {0.f, 0.f, window_width * 1.f, window_height * 1.f};
+        SDL_RenderTexture(renderer, bg.texture, &srcrect, &dscrect);
+    }
+
     blue.Draw(renderer);
-    red.Draw(renderer);
+    orange.Draw(renderer);
 
     SetStringTextureColorMode({255, 155, 0});
-    DrawString(std::to_string(red.score), {30, 10, 30, 30});
+    DrawString(std::to_string(orange.score), {30, 10, 30, 30});
 
     SetStringTextureColorMode({0, 155, 255});
     DrawString(std::to_string(blue.score), {window_width - 45.f, 10, 30, 30});
+
+    SDL_FRect srcrect = {0.f, 0.f, 29.f, 15.f};
+    SDL_FRect dscrect = {blue.light.back().x - 12.0f, blue.light.back().y - 5.f, 29.f, 15.f};
+    if (!blue.dead)
+        SDL_RenderTextureRotated(renderer, blueBike.texture, &srcrect, &dscrect, blue.GetAngle(), NULL, SDL_FLIP_NONE);
+    dscrect = {orange.light.back().x - 12.0f, orange.light.back().y - 5.f, 29.f, 15.f};
+    if (!orange.dead)
+        SDL_RenderTextureRotated(renderer, orangeBike.texture, &srcrect, &dscrect, orange.GetAngle(), NULL, SDL_FLIP_NONE);
 
     // this->ImguiRender();
     SDL_RenderPresent(renderer);

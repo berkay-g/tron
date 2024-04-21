@@ -72,6 +72,17 @@ void Player::BorderTeleport(int borderWidth, int borderHeight)
         head.y = 0;
 }
 
+const double Player::GetAngle() const
+{
+    if (direction == Vec2s(0, -1)) // Up
+        return 90.0;
+    if (direction == Vec2s(0, 1)) // Down
+        return 270.0;
+    if (direction == Vec2s(-1, 0)) // Left
+        return 0.0;
+    return 180.0; // Right
+}
+
 void Player::ResetPosition()
 {
     light.clear();

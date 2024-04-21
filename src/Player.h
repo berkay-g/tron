@@ -21,7 +21,6 @@ struct Vec2Hash
 class Player
 {
 public:
-
     Player(const Color &color, const Vec2s &pos, const Vec2s &dir, const SDL_KeyCode keyCodes[4], float size = 5.f)
         : direction(dir), color(color), size(size), dead(false), score(0), iPos(pos), iDir(dir)
     {
@@ -47,8 +46,10 @@ public:
 
     void Draw(SDL_Renderer *renderer);
 
+    const double GetAngle() const;
+
     void ResetPosition();
-    
+
 public:
     std::vector<SDL_FRect> light;
 
