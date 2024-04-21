@@ -9,6 +9,13 @@ void Player::Update()
 
         SDL_FRect rect = {head.x * size, head.y * size, size, size};
         light.push_back(rect);
+
+        if (trail.size() >= maxTrailLength)
+        {
+            light.erase(light.begin());
+            trail.erase(trail.begin());
+        }
+        
     }
 }
 

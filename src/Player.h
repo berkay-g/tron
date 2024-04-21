@@ -21,8 +21,8 @@ struct Vec2Hash
 class Player
 {
 public:
-    Player(const Color &color, const Vec2s &pos, const Vec2s &dir, const SDL_KeyCode keyCodes[4], float size = 5.f)
-        : direction(dir), color(color), size(size), dead(false), score(0), iPos(pos), iDir(dir)
+    Player(const Color &color, const Vec2s &pos, const Vec2s &dir, const SDL_KeyCode keyCodes[4], int maxTrailLength = 75, float size = 5.f)
+        : direction(dir), color(color), size(size), dead(false), score(0), iPos(pos), iDir(dir), maxTrailLength(maxTrailLength)
     {
         SDL_FRect rect = {pos.x * size, pos.y * size, size, size};
         light.push_back(rect);
@@ -55,7 +55,8 @@ public:
 
     std::unordered_set<Vec2s, Vec2Hash> trail;
     Vec2s head;
-
+    int maxTrailLength;
+    
     Color color;
     Vec2s direction;
     Vec2s iPos;

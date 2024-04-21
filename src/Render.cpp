@@ -2,7 +2,6 @@
 
 #include <vector>
 #include "Player.h"
-#include "Bikes.h"
 
 bool endgame = false;
 bool paused = true;
@@ -27,8 +26,8 @@ void App::Setup()
     blue.iPos = Vec2s((short)(window_width / blue.size) - 50, (short)(window_height / blue.size) - 10);
     blue.ResetPosition();
 
-    blueBike.Bind(bBike, bBikeSize, renderer);
-    orangeBike.Bind(oBike, oBikeSize, renderer);
+    blueBike.Bind("b.png", renderer);
+    orangeBike.Bind("o.png", renderer);
 
     bg.Bind("bg.jpg", renderer);
     SDL_SetTextureColorMod(bg.texture, 75, 75, 75);
