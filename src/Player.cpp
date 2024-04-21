@@ -15,7 +15,6 @@ void Player::Update()
             light.erase(light.begin());
             trail.erase(trail.begin());
         }
-        
     }
 }
 
@@ -100,5 +99,6 @@ void Player::ResetPosition()
 
     head = iPos;
     direction = iDir;
+    
     dead = false;
 }

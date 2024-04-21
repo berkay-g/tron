@@ -52,7 +52,6 @@ public:
 
 public:
     std::vector<SDL_FRect> light;
-
     std::unordered_set<Vec2s, Vec2Hash> trail;
     Vec2s head;
     int maxTrailLength;
