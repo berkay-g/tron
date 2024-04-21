@@ -7,17 +7,6 @@
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_rect.h"
 
-#include <unordered_set>
-
-struct Vec2Hash
-{
-    std::size_t operator()(const Vec2s &v) const
-    {
-        // Combine the hash values of the x and y components
-        return (std::hash<short>()(v.x)) ^ (std::hash<short>()(v.y));
-    }
-};
-
 class Player
 {
 public:
@@ -51,8 +40,8 @@ public:
     void ResetPosition();
 
 public:
+    std::vector<Vec2s> trail;
     std::vector<SDL_FRect> light;
-    std::unordered_set<Vec2s, Vec2Hash> trail;
     Vec2s head;
     int maxTrailLength;
     

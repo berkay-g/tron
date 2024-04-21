@@ -4,13 +4,12 @@ void Player::Update()
 {
     if (!dead)
     {
-        trail.insert(head);
+        trail.push_back(head);
         head = head + direction;
-
         SDL_FRect rect = {head.x * size, head.y * size, size, size};
         light.push_back(rect);
 
-        if (trail.size() >= maxTrailLength)
+        if (light.size() >= maxTrailLength)
         {
             light.erase(light.begin());
             trail.erase(trail.begin());
@@ -29,12 +28,12 @@ void Player::Draw(SDL_Renderer *renderer)
 
 const bool Player::CheckCollision(Player &other) const
 {
-    return other.dead ? false : other.trail.find(head) != other.trail.end();
+    return other.dead ? false : std::find(other.trail.begin(), other.trail.end(), head) != other.trail.end();
 }
 
 const bool Player::CheckCollision() const
 {
-    return trail.find(head) != trail.end();
+    return std::find(trail.begin(), trail.end(), head) != trail.end();
 }
 
 bool Player::KeyEvents(SDL_Event &event)
@@ -99,6 +98,6 @@ void Player::ResetPosition()
 
     head = iPos;
     direction = iDir;
-    
+
     dead = false;
 }
