@@ -8,8 +8,8 @@ bool endgame = false;
 bool paused = true;
 bool navigationLock[2] = {0};
 
-const SDL_KeyCode wasd[4] = {SDLK_w, SDLK_a, SDLK_s, SDLK_d};
-const SDL_KeyCode arrows[4] = {SDLK_UP, SDLK_LEFT, SDLK_DOWN, SDLK_RIGHT};
+const SDL_Keycode wasd[] = {SDLK_w, SDLK_a, SDLK_s, SDLK_d};
+const SDL_Keycode arrows[4] = {SDLK_UP, SDLK_LEFT, SDLK_DOWN, SDLK_RIGHT};
 
 Player blue(Color(0, 155, 255), Vec2s(70, 110), Vec2s(0, -1), arrows);
 // Player yellow(Color(255, 255, 0), Vec2s(70, 110), Vec2s(0, -1), arrows);
