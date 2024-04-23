@@ -89,13 +89,20 @@ void App::Update(SDL_Event &event, float deltaTime)
         while (timeCounter >= 1 / speed)
         {
             timeCounter -= 1 / speed;
+            blue.BorderTeleport(window_width, window_height);
+            orange.BorderTeleport(window_width, window_height);
+
             blue.Update();
             orange.Update();
             navigationLock[0] = false;
             navigationLock[1] = false;
 
-            blue.BorderTeleport(window_width, window_height);
-            orange.BorderTeleport(window_width, window_height);
+            if (orange.trail.back() == blue.trail.back() && (!blue.dead && !orange.dead))
+            {
+                blue.dead = true;
+                orange.dead = true;
+                endgame = true;
+            }
 
             if (orange.CheckCollision() || orange.CheckCollision(blue))
             {
@@ -115,13 +122,6 @@ void App::Update(SDL_Event &event, float deltaTime)
                     SDL_SetWindowTitle(window, "<<<<");
                 }
                 blue.dead = true;
-                endgame = true;
-            }
-
-            if (!endgame && orange.head == blue.head)
-            {
-                blue.dead = true;
-                orange.dead = true;
                 endgame = true;
             }
         }
@@ -152,13 +152,12 @@ void App::Draw()
     SetStringTextureColorMode({0, 155, 255});
     DrawString(std::to_string(blue.score), {window_width - 45.f, 10, 30, 30});
 
-    SDL_FRect srcrect = {0.f, 0.f, 29.f, 15.f};
     SDL_FRect dscrect = {blue.light.back().x - 12.0f, blue.light.back().y - 5.f, 29.f, 15.f};
     if (!blue.dead)
-        SDL_RenderTextureRotated(renderer, blueBike.texture, &srcrect, &dscrect, blue.GetAngle(), NULL, SDL_FLIP_NONE);
+        SDL_RenderTextureRotated(renderer, blueBike.texture, NULL, &dscrect, blue.GetAngle(), NULL, SDL_FLIP_NONE);
     dscrect = {orange.light.back().x - 12.0f, orange.light.back().y - 5.f, 29.f, 15.f};
     if (!orange.dead)
-        SDL_RenderTextureRotated(renderer, orangeBike.texture, &srcrect, &dscrect, orange.GetAngle(), NULL, SDL_FLIP_NONE);
+        SDL_RenderTextureRotated(renderer, orangeBike.texture, NULL, &dscrect, orange.GetAngle(), NULL, SDL_FLIP_NONE);
 
     // this->ImguiRender();
     SDL_RenderPresent(renderer);

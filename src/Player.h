@@ -16,7 +16,7 @@ public:
         SDL_FRect rect = {pos.x * size, pos.y * size, size, size};
         light.push_back(rect);
 
-        head = pos;
+        trail.push_back(pos);
 
         for (size_t i = 0; i < 4; ++i)
         {
@@ -42,7 +42,6 @@ public:
 public:
     std::vector<Vec2s> trail;
     std::vector<SDL_FRect> light;
-    Vec2s head;
     int maxTrailLength;
     
     Color color;

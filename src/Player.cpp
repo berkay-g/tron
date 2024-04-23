@@ -4,9 +4,14 @@ void Player::Update()
 {
     if (!dead)
     {
-        trail.push_back(head);
-        head = head + direction;
-        SDL_FRect rect = {head.x * size, head.y * size, size, size};
+        if ((light.back().x != trail.back().x * size) || (light.back().y != trail.back().y * size))
+        {
+            light.back().x = trail.back().x * size;
+            light.back().y = trail.back().y * size;
+        }
+
+        trail.push_back(trail.back() + direction);
+        SDL_FRect rect = {trail.back().x * size, trail.back().y * size, size, size};
         light.push_back(rect);
 
         if (light.size() >= maxTrailLength)
@@ -21,19 +26,16 @@ void Player::Draw(SDL_Renderer *renderer)
 {
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, dead ? 50 : color.a);
     SDL_RenderFillRects(renderer, light.data(), (int)light.size());
-
-    SDL_FRect rect = {head.x * size, head.y * size, size, size};
-    SDL_RenderFillRect(renderer, &rect);
 }
 
 const bool Player::CheckCollision(Player &other) const
 {
-    return other.dead ? false : std::find(other.trail.begin(), other.trail.end(), head) != other.trail.end();
+    return other.dead ? false : std::find(other.trail.begin(), other.trail.end(), trail.back()) != other.trail.end();
 }
 
 const bool Player::CheckCollision() const
 {
-    return std::find(trail.begin(), trail.end(), head) != trail.end();
+    return std::find(std::next(trail.rbegin()), trail.rend(), trail.back()) != trail.rend();
 }
 
 bool Player::KeyEvents(SDL_Event &event)
@@ -67,14 +69,14 @@ bool Player::KeyEvents(SDL_Event &event)
 
 void Player::BorderTeleport(int borderWidth, int borderHeight)
 {
-    if (head.x < 0)
-        head.x = -1 + short(borderWidth / size);
-    if (head.x > -1 + borderWidth / size)
-        head.x = 0;
-    if (head.y < 0)
-        head.y = -1 + short(borderHeight / size);
-    if (head.y > -1 + borderHeight / size)
-        head.y = 0;
+    if (trail.back().x < 0)
+        trail.back().x = -1 + short(borderWidth / size);
+    if (trail.back().x > -1 + borderWidth / size)
+        trail.back().x = 0;
+    if (trail.back().y < 0)
+        trail.back().y = -1 + short(borderHeight / size);
+    if (trail.back().y > -1 + borderHeight / size)
+        trail.back().y = 0;
 }
 
 const double Player::GetAngle() const
@@ -95,8 +97,8 @@ void Player::ResetPosition()
     light.push_back(rect);
 
     trail.clear();
+    trail.push_back(iPos);
 
-    head = iPos;
     direction = iDir;
 
     dead = false;
