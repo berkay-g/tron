@@ -43,7 +43,7 @@ struct Vec3i
     {
         return Vec3i(x + other.x, y + other.y, z + other.z);
     }
- 
+
     bool operator==(Vec3i const &other) const
     {
         return (x == other.x) && (y == other.y) && (z == other.z);
@@ -102,7 +102,7 @@ struct Vec3f
         return (x == other.x) && (y == other.y) && (z == other.z);
     }
 
-    bool operator!=(Vec3f const &other) const 
+    bool operator!=(Vec3f const &other) const
     {
         return (x != other.x) && (y != other.y) && (z == other.z);
     }
