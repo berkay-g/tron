@@ -19,8 +19,8 @@ int EventFilter(void *userdata, SDL_Event *event)
 
 int main(int argc, char *argv[])
 {
-    App app("Tron", 1000, 600, SDL_INIT_VIDEO, 0, argv[1]);
-    app.SetWindowMinimumSize(600, 600);
+    App app("Tron", 600, 600, SDL_INIT_VIDEO, 0, argv[1]);
+    app.SetWindowMinimumSize(300, 300);
     SDL_SetEventFilter(EventFilter, &app);
 
     // ImGuiIO &io = app.ImguiInit();

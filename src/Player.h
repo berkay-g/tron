@@ -11,7 +11,7 @@
 class Player
 {
 public:
-    Player(const Color &color, const Vec2s &pos, const Vec2s &dir, const SDL_Keycode keyCodes[4], int maxTrailLength = 350, float size = 5.f)
+    Player(const Color &color, const Vec2s &pos, const Vec2s &dir, const SDL_Keycode keyCodes[4], int maxTrailLength = 360, float size = 5.f)
         : direction(dir), color(color), size(size), dead(false), score(0), iPos(pos), iDir(dir), maxTrailLength(maxTrailLength)
     {
         SDL_FRect rect = {pos.x * size, pos.y * size, size, size};

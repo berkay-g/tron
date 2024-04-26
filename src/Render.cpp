@@ -38,13 +38,23 @@ App::Texture blueBike, orangeBike, bg;
 App::Texture cycleTextures[4];
 
 Button test({100.f, 100.f, 120.f, 40.f}, Color(40, 40, 40, 0), Color(8, 170, 249, 155), Color(5, 134, 199), "start", Color(197, 197, 197), Color::White, SDLK_SPACE);
-Button incDec[4];
+Button incDec[8];
 
-void testButton();
+Vec2i res[] = {Vec2i(300, 300), Vec2i(600, 600), Vec2i(800, 600), Vec2i(1024, 768), Vec2i(1280, 720), Vec2i(1280, 960), Vec2i(1360, 768), Vec2i(1600, 900), Vec2i(1768, 992)};
+int currentRes = 1;
+int prevRes = 1;
+
+void updateDims(int w, int h);
+
+void testButton(SDL_Window* window);
 void increasePlayerCount();
 void decreasePlayerCount();
 void increaseSpeed();
 void decreaseSpeed();
+void increaseTrailSize();
+void decreaseTrailSize();
+void increaseResolution();
+void decreaseResolution();
 
 void App::Setup()
 {
@@ -58,9 +68,7 @@ void App::Setup()
     bg.Bind("bg.jpg", renderer);
     SDL_SetTextureColorMod(bg.texture, 50, 50, 50);
 
-    test.changeDims({window_width / 2.f, -100 + window_height / 2.f, 120.f, 40.f});
-
-    for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 8; i++)
     {
         if (i % 2 == 0)
             incDec[i] = Button({120.f, 150.f, 30.f, 30.f}, Color(40, 40, 40, 0), Color(8, 170, 249, 0), Color(100, 100, 100, 30), ">", Color(197, 197, 197), Color::White, SDLK_0);
@@ -68,10 +76,7 @@ void App::Setup()
             incDec[i] = Button({120.f, 150.f, 30.f, 30.f}, Color(40, 40, 40, 0), Color(8, 170, 249, 0), Color(100, 100, 100, 30), "<", Color(197, 197, 197), Color::White, SDLK_0);
     }
 
-    incDec[0].changeDims({25 + window_width / 2.f, window_height / 2.f, 30.f, 30.f});
-    incDec[1].changeDims({-25 + window_width / 2.f, window_height / 2.f, 30.f, 30.f});
-    incDec[2].changeDims({25 + window_width / 2.f, 75 + window_height / 2.f, 30.f, 30.f});
-    incDec[3].changeDims({-25 + window_width / 2.f, 75 + window_height / 2.f, 30.f, 30.f});
+    updateDims(window_width, window_height);
 }
 
 void App::Update(SDL_Event &event, float deltaTime)
@@ -86,7 +91,14 @@ void App::Update(SDL_Event &event, float deltaTime)
             break;
         case SDL_EVENT_MOUSE_BUTTON_DOWN:
             if (test.hovering && mainMenu)
-                testButton();
+                if (event.button.button == SDL_BUTTON_RIGHT)
+                {
+                    testButton(window);
+                    for (auto &c : cycles)
+                        c.score = 0;
+                }
+                else
+                    testButton(window);
 
             if (incDec[0].hovering && mainMenu)
                 increasePlayerCount();
@@ -97,13 +109,22 @@ void App::Update(SDL_Event &event, float deltaTime)
             if (incDec[3].hovering && mainMenu)
                 decreaseSpeed();
 
+            if (incDec[4].hovering && mainMenu)
+                increaseTrailSize();
+            if (incDec[5].hovering && mainMenu)
+                decreaseTrailSize();
+            if (incDec[6].hovering && mainMenu)
+                increaseResolution();
+            if (incDec[7].hovering && mainMenu)
+                decreaseResolution();
+
             test.mousePressed = true;
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 8; i++)
                 incDec[i].mousePressed = true;
             break;
         case SDL_EVENT_MOUSE_BUTTON_UP:
             test.mousePressed = false;
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 8; i++)
                 incDec[i].mousePressed = false;
             break;
 
@@ -147,7 +168,7 @@ void App::Update(SDL_Event &event, float deltaTime)
 
             test.key = event.key.keysym.sym;
             if (test.activateKey == test.key && mainMenu)
-                testButton();
+                testButton(window);
 
             if (paused || mainMenu)
                 break;
@@ -233,7 +254,7 @@ void App::Update(SDL_Event &event, float deltaTime)
         float mouseX, mouseY;
         SDL_GetMouseState(&mouseX, &mouseY);
         test.update(mouseX, mouseY);
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 8; i++)
             incDec[i].update(mouseX, mouseY);
     }
 }
@@ -254,12 +275,16 @@ void App::Draw()
     if (mainMenu)
     {
         test.display(*this);
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 8; i++)
             incDec[i].display(*this);
 
-        DrawString(std::to_string(playerCount), {-10 + window_width / 2.f, -13 + window_height / 2.f, 26, 26});
+        DrawString(std::to_string(playerCount), {-10 + window_width / 2.f, -13 - 20 + window_height / 2.f, 26, 26});
 
-        DrawString(std::to_string((int)speed), {-18 + window_width / 2.f, 75 - 13 + window_height / 2.f, 26, 26});
+        DrawString(std::to_string((int)speed), {-18 + window_width / 2.f, 30 - 13 + window_height / 2.f, 26, 26});
+
+        DrawString(std::to_string((int)cycles[0].maxTrailLength), {-26 + window_width / 2.f, 80 - 13 + window_height / 2.f, 26, 26});
+
+        DrawString(std::string(std::to_string(res[currentRes].x) + "x" + std::to_string(res[currentRes].y)), {(currentRes <= 2 ? -60 : -68) + window_width / 2.f, 130 - 13 + window_height / 2.f, 26, 26});
     }
     else
     {
@@ -294,11 +319,47 @@ void App::Draw()
     SDL_RenderPresent(renderer);
 }
 
-void testButton()
+void updateDims(int w, int h)
+{
+    short gw = w / (int)cycles[0].size;
+    short gh = h / (int)cycles[0].size;
+
+    cycles[0].iPos = Vec2s(gw - 20, gh - 10);
+    cycles[0].ResetPosition();
+    cycles[1].iPos = Vec2s(20, 10);
+    cycles[1].ResetPosition();
+    cycles[2].iPos = Vec2s(10, gh - 25);
+    cycles[2].ResetPosition();
+    cycles[3].iPos = Vec2s(gw - 10, 25);
+    cycles[3].ResetPosition();
+
+    test.changeDims({w / 2.f, -100 + h / 2.f, 120.f, 40.f});
+
+    incDec[0].changeDims({25 + w / 2.f, -20 + h / 2.f, 30.f, 30.f});
+    incDec[1].changeDims({-25 + w / 2.f, -20 + h / 2.f, 30.f, 30.f});
+    incDec[2].changeDims({25 + w / 2.f, 30 + h / 2.f, 30.f, 30.f});
+    incDec[3].changeDims({-25 + w / 2.f, 30 + h / 2.f, 30.f, 30.f});
+
+    incDec[4].changeDims({32 + w / 2.f, 80 + h / 2.f, 30.f, 30.f});
+    incDec[5].changeDims({-32 + w / 2.f, 80 + h / 2.f, 30.f, 30.f});
+
+    incDec[6].changeDims({72 + w / 2.f, 130 + h / 2.f, 30.f, 30.f});
+    incDec[7].changeDims({-72 + w / 2.f, 130 + h / 2.f, 30.f, 30.f});
+}
+
+void testButton(SDL_Window* window)
 {
     mainMenu = false;
     SDL_Log("woo hoo");
     SDL_SetTextureColorMod(bg.texture, 100, 100, 100);
+
+    if (currentRes != prevRes)
+    {
+        SDL_SetWindowSize(window, res[currentRes].x, res[currentRes].y);
+        SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+        prevRes = currentRes;
+        updateDims(res[currentRes].x, res[currentRes].y);
+    }
 }
 
 void increasePlayerCount()
@@ -319,4 +380,28 @@ void increaseSpeed()
 void decreaseSpeed()
 {
     speed <= 10 ? speed = 10 : speed -= 5;
+}
+
+void increaseTrailSize()
+{
+    int l = cycles[0].maxTrailLength >= 980 ? 980 : cycles[0].maxTrailLength + 20;
+    for (auto &c : cycles)
+        c.maxTrailLength = l;
+}
+
+void decreaseTrailSize()
+{
+    int l = cycles[0].maxTrailLength <= 100 ? 100 : cycles[0].maxTrailLength - 20;
+    for (auto &c : cycles)
+        c.maxTrailLength = l;
+}
+
+void increaseResolution()
+{
+    currentRes >= 8 ? currentRes = 0 : currentRes += 1;
+}
+
+void decreaseResolution()
+{
+    currentRes <= 0 ? currentRes = 8 : currentRes -= 1;
 }
