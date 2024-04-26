@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <algorithm>
 #include "util.h"
 #include "Color.h"
 #include "SDL3/SDL_render.h"
